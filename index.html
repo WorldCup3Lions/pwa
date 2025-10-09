@@ -7,7 +7,7 @@
     <!-- Link to web app manifest -->
     <link rel="manifest" href="manifest.json">
     <!-- Theme color for the address bar -->
-    <meta name="theme-color" content="#FF9990"/>
+    <meta name="theme-color" content="#6366f1"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icon-192.png">
@@ -251,20 +251,30 @@
             </div>
         </div>
         
-        <!-- Stats Banner -->
+        <!-- Game Info Banner -->
         <div class="stats-banner">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">Points</div>
-                    <div class="stat-value" id="totalPoints">0</div>
+            <div style="text-align: center; margin-bottom: 16px;">
+                <div style="font-size: 12px; color: #c4b5fd; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Today's Game</div>
+                <div style="font-size: 24px; font-weight: 900; margin-bottom: 4px;">Jaguars vs Chiefs</div>
+                <div style="display: flex; justify-content: center; gap: 20px; font-size: 14px; color: #e9d5ff;">
+                    <span>🕐 8:20 PM ET</span>
+                    <span>JAX +280 | KC -350</span>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-label">Picked</div>
-                    <div class="stat-value"><span id="pickedCount">0</span>/10</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Resets</div>
-                    <div class="stat-value" id="timeLeft">18h</div>
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Points</div>
+                        <div class="stat-value" id="totalPoints">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Picked</div>
+                        <div class="stat-value"><span id="pickedCount">0</span>/8</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Resets</div>
+                        <div class="stat-value" id="timeLeft">18h</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -272,38 +282,32 @@
         <!-- Section Header -->
         <div class="section-header">
             <h2>Today's Packs</h2>
-            <span>⚡ 5 Available</span>
+            <span>⚡ 4 Available</span>
         </div>
         
         <!-- Packs Grid -->
         <div class="packs-grid">
             <div class="pack-card" onclick="openPack(1)" data-pack-id="1">
-                <div class="pack-icon">⭐</div>
-                <div class="pack-name">Starter Pack</div>
+                <div class="pack-icon">📦</div>
+                <div class="pack-name">Pack #1</div>
                 <div class="pack-subtitle">Pick 2 of 5</div>
             </div>
             
             <div class="pack-card" onclick="openPack(2)" data-pack-id="2">
-                <div class="pack-icon">💎</div>
-                <div class="pack-name">Pro Pack</div>
+                <div class="pack-icon">📦</div>
+                <div class="pack-name">Pack #2</div>
                 <div class="pack-subtitle">Pick 2 of 5</div>
             </div>
             
             <div class="pack-card" onclick="openPack(3)" data-pack-id="3">
-                <div class="pack-icon">🔥</div>
-                <div class="pack-name">Elite Pack</div>
+                <div class="pack-icon">📦</div>
+                <div class="pack-name">Pack #3</div>
                 <div class="pack-subtitle">Pick 2 of 5</div>
             </div>
             
             <div class="pack-card" onclick="openPack(4)" data-pack-id="4">
-                <div class="pack-icon">👑</div>
-                <div class="pack-name">Legend Pack</div>
-                <div class="pack-subtitle">Pick 2 of 5</div>
-            </div>
-            
-            <div class="pack-card" onclick="openPack(5)" data-pack-id="5">
-                <div class="pack-icon">🏆</div>
-                <div class="pack-name">Ultimate Pack</div>
+                <div class="pack-icon">📦</div>
+                <div class="pack-name">Pack #4</div>
                 <div class="pack-subtitle">Pick 2 of 5</div>
             </div>
         </div>
