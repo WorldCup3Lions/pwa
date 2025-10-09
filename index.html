@@ -1,42 +1,403 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prop Picks</title>
-
-  <!-- Link to web app manifest -->
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Theme color for the address bar -->
-  <meta name="theme-color" content="#FF9990"/>
-
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #000000;
-    }
-    h1 {
-      color: #99FFF0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prop Picks</title>
+    <!-- Link to web app manifest -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Theme color for the address bar -->
+    <meta name="theme-color" content="#FF9990"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .status-bar {
+            height: env(safe-area-inset-top, 44px);
+            background: transparent;
+        }
+        
+        .container {
+            padding: 0 24px;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+        }
+        
+        .header {
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            transform: rotate(12deg);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        
+        .logo-inner {
+            transform: rotate(-12deg);
+        }
+        
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-text p {
+            font-size: 14px;
+            color: #c4b5fd;
+        }
+        
+        .stats-banner {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 24px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #c4b5fd;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 900;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 24px 0 16px;
+        }
+        
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+        
+        .section-header span {
+            font-size: 13px;
+            color: #c4b5fd;
+        }
+        
+        .packs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .pack-card {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            min-height: 180px;
+        }
+        
+        .pack-card:active {
+            transform: scale(0.95);
+        }
+        
+        .pack-card.complete {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .pack-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .pack-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        
+        .pack-subtitle {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        .checkmark {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #059669;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 24px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .nav-item:active {
+            opacity: 0.6;
+        }
+        
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .nav-item.active .nav-icon {
+            background: #7c3aed;
+        }
+        
+        .nav-item:not(.active) {
+            opacity: 0.5;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-  <h1>Prop Picks</h1>
-
-  <script>
-    // Register the service worker for offline use
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('Service Worker registered:', reg))
-          .catch(err => console.error('Service Worker registration failed:', err));
-      });
-    }
-  </script>
+    <div class="status-bar"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-inner">🏆</div>
+            </div>
+            <div class="header-text">
+                <h1>Prop Picks</h1>
+                <p>Open. Pick. Win.</p>
+            </div>
+        </div>
+        
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Points</div>
+                    <div class="stat-value" id="totalPoints">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Picked</div>
+                    <div class="stat-value"><span id="pickedCount">0</span>/10</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Resets</div>
+                    <div class="stat-value" id="timeLeft">18h</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section Header -->
+        <div class="section-header">
+            <h2>Today's Packs</h2>
+            <span>⚡ 5 Available</span>
+        </div>
+        
+        <!-- Packs Grid -->
+        <div class="packs-grid">
+            <div class="pack-card" onclick="openPack(1)" data-pack-id="1">
+                <div class="pack-icon">⭐</div>
+                <div class="pack-name">Starter Pack</div>
+                <div class="pack-subtitle">Pick 2 of 5</div>
+            </div>
+            
+            <div class="pack-card" onclick="openPack(2)" data-pack-id="2">
+                <div class="pack-icon">💎</div>
+                <div class="pack-name">Pro Pack</div>
+                <div class="pack-subtitle">Pick 2 of 5</div>
+            </div>
+            
+            <div class="pack-card" onclick="openPack(3)" data-pack-id="3">
+                <div class="pack-icon">🔥</div>
+                <div class="pack-name">Elite Pack</div>
+                <div class="pack-subtitle">Pick 2 of 5</div>
+            </div>
+            
+            <div class="pack-card" onclick="openPack(4)" data-pack-id="4">
+                <div class="pack-icon">👑</div>
+                <div class="pack-name">Legend Pack</div>
+                <div class="pack-subtitle">Pick 2 of 5</div>
+            </div>
+            
+            <div class="pack-card" onclick="openPack(5)" data-pack-id="5">
+                <div class="pack-icon">🏆</div>
+                <div class="pack-name">Ultimate Pack</div>
+                <div class="pack-subtitle">Pick 2 of 5</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-items">
+            <div class="nav-item active">
+                <div class="nav-icon">🏆</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📊</div>
+                <div class="nav-label">Stats</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🏅</div>
+                <div class="nav-label">Results</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Register the service worker for offline use
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered:', reg))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
+        }
+        
+        // Load saved data from localStorage
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
+            const selections = data.selections || {};
+            
+            let totalPoints = 0;
+            let pickedCount = 0;
+            
+            // Update each pack's UI based on saved selections
+            Object.keys(selections).forEach(packId => {
+                const pack = document.querySelector(`[data-pack-id="${packId}"]`);
+                if (pack && selections[packId].length === 2) {
+                    pack.classList.add('complete');
+                    
+                    // Add checkmark if not already present
+                    if (!pack.querySelector('.checkmark')) {
+                        const checkmark = document.createElement('div');
+                        checkmark.className = 'checkmark';
+                        checkmark.textContent = '✓';
+                        pack.appendChild(checkmark);
+                    }
+                    
+                    // Calculate points
+                    totalPoints += selections[packId].reduce((sum, card) => sum + card.points, 0);
+                    pickedCount += 2;
+                }
+            });
+            
+            // Update stats display
+            document.getElementById('totalPoints').textContent = totalPoints;
+            document.getElementById('pickedCount').textContent = pickedCount;
+        }
+        
+        // Open pack - navigate to pack page
+        function openPack(packId) {
+            localStorage.setItem('currentPack', packId);
+            window.location.href = 'pack.html';
+        }
+        
+        // Update countdown timer
+        function updateTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const diff = tomorrow - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            document.getElementById('timeLeft').textContent = `${hours}h`;
+        }
+        
+        // Initialize on page load
+        loadData();
+        updateTimer();
+        setInterval(updateTimer, 60000); // Update every minute
+    </script>
 </body>
 </html>
