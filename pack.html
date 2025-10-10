@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Open Pack - Prop Picks</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .status-bar {
+            height: env(safe-area-inset-top, 44px);
+            background: transparent;
+        }
+        
+        .header {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .back-btn:active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .selection-counter {
+            text-align: center;
+        }
+        
+        .counter-label {
+            font-size: 12px;
+            color: #c4b5fd;
+            margin-bottom: 4px;
+        }
+        
+        .counter-value {
+            font-size: 24px;
+            font-weight: 900;
+        }
+        
+        .pack-title {
+            text-align: center;
+            padding: 0 24px 24px;
+        }
+        
+        .pack-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 16px 32px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .pack-icon {
+            font-size: 32px;
+        }
+        
+        .pack-name {
+            font-size: 24px;
+            font-weight: 900;
+        }
+        
+        .pack-subtitle {
+            font-size: 14px;
+            color: #c4b5fd;
+        }
+        
+        .cards-container {
+            padding: 0 24px;
+            padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+        }
+        
+        .card {
+            background: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+        }
+        
+        .card.selected {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .card-text {
+            font-size: 16px;
+            font-weight: 600;
+            flex: 1;
+            padding-right: 12px;
+        }
+        
+        .checkmark {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #059669;
+            flex-shrink: 0;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-game {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .card.selected .card-game {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .card-points {
+            background: rgba(251, 191, 36, 0.2);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+        
+        .card.selected .card-points {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .lock-button {
+            position: fixed;
+            bottom: env(safe-area-inset-bottom, 20px);
+            left: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+        
+        .lock-button.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .lock-button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar"></div>
+    
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="selection-counter">
+            <div class="counter-label">Selected</div>
+            <div class="counter-value"><span id="selectedCount">0</span>/2</div>
+        </div>
+        <div style="width: 40px;"></div>
+    </div>
+    
+    <div class="pack-title">
+        <div class="pack-badge">
+            <span class="pack-icon">📦</span>
+            <span class="pack-name" id="packName">Pack #1</span>
+        </div>
+        <p class="pack-subtitle">Choose 2 props to lock in</p>
+    </div>
+    
+    <div class="cards-container" id="cardsContainer">
+        <!-- Cards will be dynamically inserted here -->
+    </div>
+    
+    <button class="lock-button" id="lockButton" onclick="lockInPicks()">
+        🔒 Lock In Picks
+    </button>
+    
+    <script>
+        // All available props (80 total) - you can expand this
+        const allProps = [
+            { id: 1, text: 'Mahomes Over 275.5 Pass Yds', points: 150, game: 'JAX vs KC' },
+            { id: 2, text: 'Chiefs -7.5', points: 75, game: 'JAX vs KC' },
+            { id: 3, text: 'Travis Kelce Over 65.5 Rec Yds', points: 100, game: 'JAX vs KC' },
+            { id: 4, text: 'Lawrence Over 1.5 Pass TDs', points: 125, game: 'JAX vs KC' },
+            { id: 5, text: 'Over 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 6, text: 'Etienne Over 75.5 Rush Yds', points: 175, game: 'JAX vs KC' },
+            { id: 7, text: 'Mahomes 2+ Pass TDs', points: 75, game: 'JAX vs KC' },
+            { id: 8, text: 'Jaguars ML', points: 300, game: 'JAX vs KC' },
+            { id: 9, text: 'Under 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 10, text: 'Chiefs Win 1st Half', points: 100, game: 'JAX vs KC' },
+            { id: 11, text: 'Rice Over 55.5 Rec Yds', points: 125, game: 'JAX vs KC' },
+            { id: 12, text: 'Kirk Over 4.5 Receptions', points: 80, game: 'JAX vs KC' },
+            { id: 13, text: 'Pacheco Over 65.5 Rush Yds', points: 150, game: 'JAX vs KC' },
+            { id: 14, text: 'Lawrence Over 250.5 Pass Yds', points: 100, game: 'JAX vs KC' },
+            { id: 15, text: 'Chiefs Score 1st TD', points: 60, game: 'JAX vs KC' },
+            { id: 16, text: 'Game Total Odd', points: 125, game: 'JAX vs KC' },
+            { id: 17, text: 'Any TD in Final 2 Min', points: 200, game: 'JAX vs KC' },
+            { id: 18, text: 'Chiefs Win By 14+', points: 225, game: 'JAX vs KC' },
+            { id: 19, text: 'Successful 2pt Conversion', points: 250, game: 'JAX vs KC' },
+            { id: 20, text: 'Kelce Anytime TD', points: 175, game: 'JAX vs KC' },
+            { id: 21, text: 'Mahomes Over 275.5 Pass Yds', points: 150, game: 'JAX vs KC' },
+            { id: 22, text: 'Chiefs -7.5', points: 75, game: 'JAX vs KC' },
+            { id: 23, text: 'Travis Kelce Over 65.5 Rec Yds', points: 100, game: 'JAX vs KC' },
+            { id: 24, text: 'Lawrence Over 1.5 Pass TDs', points: 125, game: 'JAX vs KC' },
+            { id: 25, text: 'Over 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 26, text: 'Etienne Over 75.5 Rush Yds', points: 175, game: 'JAX vs KC' },
+            { id: 27, text: 'Mahomes 2+ Pass TDs', points: 75, game: 'JAX vs KC' },
+            { id: 28, text: 'Jaguars ML', points: 300, game: 'JAX vs KC' },
+            { id: 29, text: 'Under 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 30, text: 'Chiefs Win 1st Half', points: 100, game: 'JAX vs KC' },
+            { id: 31, text: 'Rice Over 55.5 Rec Yds', points: 125, game: 'JAX vs KC' },
+            { id: 32, text: 'Kirk Over 4.5 Receptions', points: 80, game: 'JAX vs KC' },
+            { id: 33, text: 'Pacheco Over 65.5 Rush Yds', points: 150, game: 'JAX vs KC' },
+            { id: 34, text: 'Lawrence Over 250.5 Pass Yds', points: 100, game: 'JAX vs KC' },
+            { id: 35, text: 'Chiefs Score 1st TD', points: 60, game: 'JAX vs KC' },
+            { id: 36, text: 'Game Total Odd', points: 125, game: 'JAX vs KC' },
+            { id: 37, text: 'Any TD in Final 2 Min', points: 200, game: 'JAX vs KC' },
+            { id: 38, text: 'Chiefs Win By 14+', points: 225, game: 'JAX vs KC' },
+            { id: 39, text: 'Successful 2pt Conversion', points: 250, game: 'JAX vs KC' },
+            { id: 40, text: 'Kelce Anytime TD', points: 175, game: 'JAX vs KC' },
+            { id: 41, text: 'Mahomes Over 275.5 Pass Yds', points: 150, game: 'JAX vs KC' },
+            { id: 42, text: 'Chiefs -7.5', points: 75, game: 'JAX vs KC' },
+            { id: 43, text: 'Travis Kelce Over 65.5 Rec Yds', points: 100, game: 'JAX vs KC' },
+            { id: 44, text: 'Lawrence Over 1.5 Pass TDs', points: 125, game: 'JAX vs KC' },
+            { id: 45, text: 'Over 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 46, text: 'Etienne Over 75.5 Rush Yds', points: 175, game: 'JAX vs KC' },
+            { id: 47, text: 'Mahomes 2+ Pass TDs', points: 75, game: 'JAX vs KC' },
+            { id: 48, text: 'Jaguars ML', points: 300, game: 'JAX vs KC' },
+            { id: 49, text: 'Under 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 50, text: 'Chiefs Win 1st Half', points: 100, game: 'JAX vs KC' },
+            { id: 51, text: 'Rice Over 55.5 Rec Yds', points: 125, game: 'JAX vs KC' },
+            { id: 52, text: 'Kirk Over 4.5 Receptions', points: 80, game: 'JAX vs KC' },
+            { id: 53, text: 'Pacheco Over 65.5 Rush Yds', points: 150, game: 'JAX vs KC' },
+            { id: 54, text: 'Lawrence Over 250.5 Pass Yds', points: 100, game: 'JAX vs KC' },
+            { id: 55, text: 'Chiefs Score 1st TD', points: 60, game: 'JAX vs KC' },
+            { id: 56, text: 'Game Total Odd', points: 125, game: 'JAX vs KC' },
+            { id: 57, text: 'Any TD in Final 2 Min', points: 200, game: 'JAX vs KC' },
+            { id: 58, text: 'Chiefs Win By 14+', points: 225, game: 'JAX vs KC' },
+            { id: 59, text: 'Successful 2pt Conversion', points: 250, game: 'JAX vs KC' },
+            { id: 60, text: 'Kelce Anytime TD', points: 175, game: 'JAX vs KC' },
+            { id: 61, text: 'Mahomes Over 275.5 Pass Yds', points: 150, game: 'JAX vs KC' },
+            { id: 62, text: 'Chiefs -7.5', points: 75, game: 'JAX vs KC' },
+            { id: 63, text: 'Travis Kelce Over 65.5 Rec Yds', points: 100, game: 'JAX vs KC' },
+            { id: 64, text: 'Lawrence Over 1.5 Pass TDs', points: 125, game: 'JAX vs KC' },
+            { id: 65, text: 'Over 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 66, text: 'Etienne Over 75.5 Rush Yds', points: 175, game: 'JAX vs KC' },
+            { id: 67, text: 'Mahomes 2+ Pass TDs', points: 75, game: 'JAX vs KC' },
+            { id: 68, text: 'Jaguars ML', points: 300, game: 'JAX vs KC' },
+            { id: 69, text: 'Under 47.5 Total Points', points: 50, game: 'JAX vs KC' },
+            { id: 70, text: 'Chiefs Win 1st Half', points: 100, game: 'JAX vs KC' },
+            { id: 71, text: 'Rice Over 55.5 Rec Yds', points: 125, game: 'JAX vs KC' },
+            { id: 72, text: 'Kirk Over 4.5 Receptions', points: 80, game: 'JAX vs KC' },
+            { id: 73, text: 'Pacheco Over 65.5 Rush Yds', points: 150, game: 'JAX vs KC' },
+            { id: 74, text: 'Lawrence Over 250.5 Pass Yds', points: 100, game: 'JAX vs KC' },
+            { id: 75, text: 'Chiefs Score 1st TD', points: 60, game: 'JAX vs KC' },
+            { id: 76, text: 'Game Total Odd', points: 125, game: 'JAX vs KC' },
+            { id: 77, text: 'Any TD in Final 2 Min', points: 200, game: 'JAX vs KC' },
+            { id: 78, text: 'Chiefs Win By 14+', points: 225, game: 'JAX vs KC' },
+            { id: 79, text: 'Successful 2pt Conversion', points: 250, game: 'JAX vs KC' },
+            { id: 80, text: 'Kelce Anytime TD', points: 175, game: 'JAX vs KC' }
+            // Add 60 more props here to reach 80 total
+        ];
+        
+        let selectedCards = [];
+        let currentPackId = null;
+        let packCards = [];
+        
+        // Initialize page
+        function init() {
+            currentPackId = localStorage.getItem('currentPack') || '1';
+            document.getElementById('packName').textContent = `Pack #${currentPackId}`;
+            
+            // Load existing selections if any
+            const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
+            const selections = data.selections || {};
+            selectedCards = selections[currentPackId] || [];
+            
+            // Get random 5 cards for this pack (seeded by pack ID for consistency)
+            packCards = getPackCards(currentPackId);
+            
+            // Render cards
+            renderCards();
+            updateUI();
+        }
+        
+        // Get 5 cards for a pack (each pack gets unique cards, no overlap)
+        function getPackCards(packId) {
+            const id = parseInt(packId);
+            // Each pack gets a unique slice of 20 cards, then picks 5 randomly from that slice
+            const startIndex = (id - 1) * 20; // Pack 1: 0-19, Pack 2: 20-39, etc.
+            const packPool = allProps.slice(startIndex, startIndex + 20);
+            
+            // Shuffle just this pack's pool
+            const shuffled = packPool.sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, 5);
+        }
+        
+        // Render all cards
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            
+            packCards.forEach(card => {
+                const isSelected = selectedCards.some(c => c.id === card.id);
+                const isDisabled = selectedCards.length >= 2 && !isSelected;
+                
+                const cardEl = document.createElement('div');
+                cardEl.className = `card ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
+                cardEl.onclick = () => !isDisabled && toggleCard(card);
+                
+                cardEl.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-text">${card.text}</div>
+                        ${isSelected ? '<div class="checkmark">✓</div>' : ''}
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-game">${card.game}</div>
+                        <div class="card-points">${card.points} pts</div>
+                    </div>
+                `;
+                
+                container.appendChild(cardEl);
+            });
+        }
+        
+        // Toggle card selection
+        function toggleCard(card) {
+            const index = selectedCards.findIndex(c => c.id === card.id);
+            
+            if (index > -1) {
+                // Deselect
+                selectedCards.splice(index, 1);
+            } else if (selectedCards.length < 2) {
+                // Select
+                selectedCards.push(card);
+            }
+            
+            renderCards();
+            updateUI();
+        }
+        
+        // Update UI (counter and button)
+        function updateUI() {
+            document.getElementById('selectedCount').textContent = selectedCards.length;
+            
+            const lockButton = document.getElementById('lockButton');
+            if (selectedCards.length === 2) {
+                lockButton.classList.add('visible');
+            } else {
+                lockButton.classList.remove('visible');
+            }
+        }
+        
+        // Lock in picks and save
+        function lockInPicks() {
+            if (selectedCards.length !== 2) return;
+            
+            // Load existing data
+            const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
+            if (!data.selections) data.selections = {};
+            
+            // Save selections for this pack
+            data.selections[currentPackId] = selectedCards;
+            
+            // Save to localStorage
+            localStorage.setItem('propPicksData', JSON.stringify(data));
+            
+            // Go back to home
+            window.location.href = 'index.html';
+        }
+        
+        // Go back without saving
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+        
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
