@@ -470,10 +470,21 @@
             // Load existing selections if any
             const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
             const selections = data.selections || {};
+            const openedPacks = data.openedPacks || [];
             selectedCards = selections[currentPackId] || [];
             
             // Get cards for this pack (ensuring no duplicates)
             packCards = getPackCards(currentPackId);
+            
+            // Check if pack has been opened before
+            if (openedPacks.includes(currentPackId)) {
+                // Skip opening animation, show cards directly
+                document.getElementById('packOpeningScreen').classList.add('hidden');
+                document.getElementById('cardsSection').classList.add('visible');
+                isPackOpened = true;
+                renderCards();
+                updateUI();
+            }
         }
         
         // Seeded random function for consistent pack generation
