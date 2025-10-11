@@ -120,17 +120,16 @@
         .pack-visual {
             width: 200px;
             height: 280px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 120px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.5);
+            transition: transform 0.2s;
             position: relative;
-            overflow: hidden;
+        }
+        
+        .pack-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
         
         .pack-visual:active {
@@ -163,12 +162,16 @@
             font-weight: 600;
             color: #c4b5fd;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .tap-count {
             display: flex;
             gap: 12px;
             margin-top: 16px;
+            justify-content: center;
         }
         
         .tap-dot {
@@ -331,7 +334,7 @@
     <!-- Pack Opening Screen -->
     <div class="pack-opening-screen" id="packOpeningScreen">
         <div class="pack-visual" id="packVisual" onclick="tapPack()">
-            📦
+            <img src="icon-400x560.png" alt="Pack">
         </div>
         <div class="tap-indicator">
             <div>Tap to open pack!</div>
@@ -537,6 +540,14 @@
             const cardsSection = document.getElementById('cardsSection');
             
             packVisual.classList.add('opening');
+            
+            // Mark this pack as opened
+            const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
+            if (!data.openedPacks) data.openedPacks = [];
+            if (!data.openedPacks.includes(currentPackId)) {
+                data.openedPacks.push(currentPackId);
+                localStorage.setItem('propPicksData', JSON.stringify(data));
+            }
             
             setTimeout(() => {
                 packOpeningScreen.classList.add('hidden');
