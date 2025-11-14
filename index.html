@@ -42,7 +42,35 @@
             padding: 20px 0;
             display: flex;
             align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
             gap: 12px;
+        }
+        
+        .reset-btn {
+            position: fixed;
+            top: calc(env(safe-area-inset-top, 44px) + 20px);
+            right: 24px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            outline: none;
+            z-index: 1000;
+        }
+        
+        .reset-btn:active {
+            transform: scale(0.95);
+            background: rgba(239, 68, 68, 0.3);
         }
         
         .logo {
@@ -241,13 +269,17 @@
     
     <div class="container">
         <!-- Header -->
+        <button class="reset-btn" onclick="resetAllPacks()">Reset</button>
+        
         <div class="header">
-            <div class="logo">
-                <div class="logo-inner">🏆</div>
-            </div>
-            <div class="header-text">
-                <h1>Prop Picks</h1>
-                <p>Open. Pick. Win.</p>
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-inner">🏆</div>
+                </div>
+                <div class="header-text">
+                    <h1>Prop Picks</h1>
+                    <p>Open. Pick. Win.</p>
+                </div>
             </div>
         </div>
         
@@ -282,7 +314,6 @@
         <!-- Section Header -->
         <div class="section-header">
             <h2>Today's Packs</h2>
-            <span>⚡ 4 Available</span>
         </div>
         
         <!-- Packs Grid -->
@@ -347,11 +378,15 @@
         
         // Load saved data from localStorage
         function loadData() {
+            // Check if we need to reset at midnight
+            checkMidnightReset();
+            
             const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
             const selections = data.selections || {};
             
             let totalPoints = 0;
             let pickedCount = 0;
+            let completedPacks = 0;
             
             // Update each pack's UI based on saved selections
             Object.keys(selections).forEach(packId => {
@@ -370,12 +405,52 @@
                     // Calculate points
                     totalPoints += selections[packId].reduce((sum, card) => sum + card.points, 0);
                     pickedCount += 2;
+                    completedPacks++;
                 }
             });
             
             // Update stats display
             document.getElementById('totalPoints').textContent = totalPoints;
             document.getElementById('pickedCount').textContent = pickedCount;
+            
+            // If all packs are completed, redirect to selection page
+            if (completedPacks === 4) {
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+            }
+        }
+        
+        // Check if we need to reset at midnight
+        function checkMidnightReset() {
+            const lastResetDate = localStorage.getItem('lastResetDate');
+            const today = new Date().toDateString();
+            
+            if (lastResetDate !== today) {
+                // Reset all data
+                localStorage.removeItem('propPicksData');
+                localStorage.setItem('lastResetDate', today);
+            }
+        }
+        
+        // Reset all packs function
+        function resetAllPacks() {
+            if (confirm('Are you sure you want to reset all your picks? This cannot be undone.')) {
+                localStorage.removeItem('propPicksData');
+                
+                // Remove all checkmarks and complete classes
+                document.querySelectorAll('.pack-card').forEach(pack => {
+                    pack.classList.remove('complete');
+                    const checkmark = pack.querySelector('.checkmark');
+                    if (checkmark) {
+                        checkmark.remove();
+                    }
+                });
+                
+                // Reset stats
+                document.getElementById('totalPoints').textContent = '0';
+                document.getElementById('pickedCount').textContent = '0';
+            }
         }
         
         // Open pack - navigate to pack page
