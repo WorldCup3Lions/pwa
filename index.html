@@ -412,14 +412,6 @@
                 if (pack && selections[packId].length === 2) {
                     pack.classList.add('complete');
                     
-                    // Add checkmark if not already present
-                    if (!pack.querySelector('.checkmark')) {
-                        const checkmark = document.createElement('div');
-                        checkmark.className = 'checkmark';
-                        checkmark.textContent = '✓';
-                        pack.appendChild(checkmark);
-                    }
-                    
                     // Add lock icon if not already present
                     if (!pack.querySelector('.lock-icon')) {
                         const lockIcon = document.createElement('div');
@@ -518,3 +510,4 @@
     </script>
 </body>
 </html>
+
