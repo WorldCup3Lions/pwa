@@ -219,6 +219,14 @@
             color: #059669;
         }
         
+        .lock-icon {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -412,6 +420,14 @@
                         pack.appendChild(checkmark);
                     }
                     
+                    // Add lock icon if not already present
+                    if (!pack.querySelector('.lock-icon')) {
+                        const lockIcon = document.createElement('div');
+                        lockIcon.className = 'lock-icon';
+                        lockIcon.textContent = '🔒';
+                        pack.appendChild(lockIcon);
+                    }
+                    
                     // Calculate points
                     totalPoints += selections[packId].reduce((sum, card) => sum + card.points, 0);
                     pickedCount += 2;
@@ -454,6 +470,10 @@
                     const checkmark = pack.querySelector('.checkmark');
                     if (checkmark) {
                         checkmark.remove();
+                    }
+                    const lockIcon = pack.querySelector('.lock-icon');
+                    if (lockIcon) {
+                        lockIcon.remove();
                     }
                 });
                 
