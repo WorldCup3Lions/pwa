@@ -645,8 +645,46 @@
                 selectedCards.push(card);
             }
             
-            renderCards();
+            updateCardsState();
             updateUI();
+        }
+        
+        // Update card states without re-rendering (no blinking)
+        function updateCardsState() {
+            const container = document.getElementById('cardsContainer');
+            const cardElements = container.querySelectorAll('.card');
+            
+            cardElements.forEach((cardEl, index) => {
+                const card = packCards[index];
+                const isSelected = selectedCards.some(c => c.id === card.id);
+                const isDisabled = selectedCards.length >= 2 && !isSelected;
+                
+                // Update classes
+                if (isSelected) {
+                    cardEl.classList.add('selected');
+                } else {
+                    cardEl.classList.remove('selected');
+                }
+                
+                if (isDisabled) {
+                    cardEl.classList.add('disabled');
+                } else {
+                    cardEl.classList.remove('disabled');
+                }
+                
+                // Update checkmark
+                const header = cardEl.querySelector('.card-header');
+                const existingCheckmark = header.querySelector('.checkmark');
+                
+                if (isSelected && !existingCheckmark) {
+                    const checkmark = document.createElement('div');
+                    checkmark.className = 'checkmark';
+                    checkmark.textContent = '✓';
+                    header.appendChild(checkmark);
+                } else if (!isSelected && existingCheckmark) {
+                    existingCheckmark.remove();
+                }
+            });
         }
         
         // Update UI (counter and button)
