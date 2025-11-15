@@ -147,13 +147,60 @@
         }
         
         .pack-visual.opening {
-            animation: openPack 0.8s forwards;
+            animation: openPack 1.2s forwards;
         }
         
         @keyframes openPack {
-            0% { transform: scale(1) rotateY(0deg); }
-            50% { transform: scale(1.2) rotateY(90deg); opacity: 0.5; }
-            100% { transform: scale(0.8) rotateY(180deg); opacity: 0; }
+            0% { 
+                transform: scale(1) rotateY(0deg) rotateZ(0deg); 
+                opacity: 1;
+                filter: brightness(1);
+            }
+            15% { 
+                transform: scale(1.15) rotateY(0deg) rotateZ(5deg); 
+            }
+            30% { 
+                transform: scale(1.3) rotateY(20deg) rotateZ(-5deg); 
+                filter: brightness(1.3);
+            }
+            50% { 
+                transform: scale(1.5) rotateY(90deg) rotateZ(0deg); 
+                opacity: 0.8;
+                filter: brightness(1.5) blur(2px);
+            }
+            70% {
+                transform: scale(1.2) rotateY(180deg) rotateZ(10deg);
+                opacity: 0.4;
+                filter: brightness(2) blur(4px);
+            }
+            100% { 
+                transform: scale(0.5) rotateY(270deg) rotateZ(0deg); 
+                opacity: 0;
+                filter: brightness(3) blur(8px);
+            }
+        }
+        
+        .pack-opening-screen::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.3), transparent);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .pack-opening-screen.opening::before {
+            animation: glowPulse 1.2s forwards;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
         }
         
         .tap-indicator {
@@ -212,9 +259,8 @@
             padding: 20px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
             opacity: 0;
-            transform: translateY(20px);
         }
         
         .card.appear {
@@ -224,12 +270,11 @@
         @keyframes cardAppear {
             to {
                 opacity: 1;
-                transform: translateY(0);
             }
         }
         
         .card:active {
-            transform: scale(0.98);
+            opacity: 0.9;
         }
         
         .card.selected {
@@ -540,6 +585,7 @@
             const cardsSection = document.getElementById('cardsSection');
             
             packVisual.classList.add('opening');
+            packOpeningScreen.classList.add('opening');
             
             // Mark this pack as opened
             const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
@@ -554,7 +600,7 @@
                 cardsSection.classList.add('visible');
                 renderCards();
                 updateUI();
-            }, 800);
+            }, 1200);
         }
         
         // Render all cards with staggered animation
