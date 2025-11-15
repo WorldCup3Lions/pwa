@@ -201,7 +201,7 @@
         }
         
         .pack-card.complete .pack-subtitle {
-            opacity: 1;
+            opacity: 0.8;
         }
         
         .checkmark {
@@ -217,14 +217,6 @@
             justify-content: center;
             font-size: 18px;
             color: #059669;
-        }
-        
-        .lock-icon {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            font-size: 20px;
-            opacity: 0.9;
         }
         
         .bottom-nav {
@@ -412,26 +404,12 @@
                 if (pack && selections[packId].length === 2) {
                     pack.classList.add('complete');
                     
-                    // Update subtitle to show "Locked"
-                    const subtitle = pack.querySelector('.pack-subtitle');
-                    if (subtitle) {
-                        subtitle.textContent = 'Locked ✓';
-                    }
-                    
                     // Add checkmark if not already present
                     if (!pack.querySelector('.checkmark')) {
                         const checkmark = document.createElement('div');
                         checkmark.className = 'checkmark';
                         checkmark.textContent = '✓';
                         pack.appendChild(checkmark);
-                    }
-                    
-                    // Add lock icon if not already present
-                    if (!pack.querySelector('.lock-icon')) {
-                        const lockIcon = document.createElement('div');
-                        lockIcon.className = 'lock-icon';
-                        lockIcon.textContent = '🔒';
-                        pack.appendChild(lockIcon);
                     }
                     
                     // Calculate points
@@ -476,15 +454,6 @@
                     const checkmark = pack.querySelector('.checkmark');
                     if (checkmark) {
                         checkmark.remove();
-                    }
-                    const lockIcon = pack.querySelector('.lock-icon');
-                    if (lockIcon) {
-                        lockIcon.remove();
-                    }
-                    // Reset subtitle
-                    const subtitle = pack.querySelector('.pack-subtitle');
-                    if (subtitle) {
-                        subtitle.textContent = 'Pick 2 of 5';
                     }
                 });
                 
