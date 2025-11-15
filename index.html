@@ -176,6 +176,12 @@
         .pack-card.complete {
             background: linear-gradient(135deg, #059669, #10b981);
             border-color: rgba(16, 185, 129, 0.3);
+            cursor: default;
+            opacity: 0.85;
+        }
+        
+        .pack-card.complete:active {
+            transform: scale(1);
         }
         
         .pack-icon {
@@ -194,6 +200,10 @@
             opacity: 0.8;
         }
         
+        .pack-card.complete .pack-subtitle {
+            opacity: 1;
+        }
+        
         .checkmark {
             position: absolute;
             top: 12px;
@@ -207,6 +217,14 @@
             justify-content: center;
             font-size: 18px;
             color: #059669;
+        }
+        
+        .lock-icon {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 20px;
+            opacity: 0.9;
         }
         
         .bottom-nav {
@@ -394,12 +412,26 @@
                 if (pack && selections[packId].length === 2) {
                     pack.classList.add('complete');
                     
+                    // Update subtitle to show "Locked"
+                    const subtitle = pack.querySelector('.pack-subtitle');
+                    if (subtitle) {
+                        subtitle.textContent = 'Locked ✓';
+                    }
+                    
                     // Add checkmark if not already present
                     if (!pack.querySelector('.checkmark')) {
                         const checkmark = document.createElement('div');
                         checkmark.className = 'checkmark';
                         checkmark.textContent = '✓';
                         pack.appendChild(checkmark);
+                    }
+                    
+                    // Add lock icon if not already present
+                    if (!pack.querySelector('.lock-icon')) {
+                        const lockIcon = document.createElement('div');
+                        lockIcon.className = 'lock-icon';
+                        lockIcon.textContent = '🔒';
+                        pack.appendChild(lockIcon);
                     }
                     
                     // Calculate points
@@ -438,12 +470,21 @@
             if (confirm('Are you sure you want to reset all your picks? This cannot be undone.')) {
                 localStorage.removeItem('propPicksData');
                 
-                // Remove all checkmarks and complete classes
+                // Remove all checkmarks, lock icons, and complete classes
                 document.querySelectorAll('.pack-card').forEach(pack => {
                     pack.classList.remove('complete');
                     const checkmark = pack.querySelector('.checkmark');
                     if (checkmark) {
                         checkmark.remove();
+                    }
+                    const lockIcon = pack.querySelector('.lock-icon');
+                    if (lockIcon) {
+                        lockIcon.remove();
+                    }
+                    // Reset subtitle
+                    const subtitle = pack.querySelector('.pack-subtitle');
+                    if (subtitle) {
+                        subtitle.textContent = 'Pick 2 of 5';
                     }
                 });
                 
@@ -453,8 +494,16 @@
             }
         }
         
-        // Open pack - navigate to pack page
+        // Open pack - navigate to pack page (only if not complete)
         function openPack(packId) {
+            const pack = document.querySelector(`[data-pack-id="${packId}"]`);
+            
+            // Check if pack is already completed
+            if (pack && pack.classList.contains('complete')) {
+                // Don't allow opening completed packs
+                return;
+            }
+            
             localStorage.setItem('currentPack', packId);
             window.location.href = 'pack.html';
         }
