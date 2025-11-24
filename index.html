@@ -335,7 +335,7 @@
         </div>
         
         <!-- Packs Grid -->
-        <div class="packs-grid">
+        <div class="packs-grid" id="packsGrid">
             <div class="pack-card" onclick="openPack(1)" data-pack-id="1">
                 <div class="pack-icon">📦</div>
                 <div class="pack-name">Pack #1</div>
@@ -360,6 +360,9 @@
                 <div class="pack-subtitle">Pick 2 of 5</div>
             </div>
         </div>
+
+        <!-- Results List (hidden until all packs complete) -->
+        <div id="resultsList" style="display:none; margin-bottom:32px;"></div>
     </div>
     
     <!-- Bottom Navigation -->
@@ -396,47 +399,70 @@
         
         // Load saved data from localStorage
         function loadData() {
-            // Check if we need to reset at midnight
             checkMidnightReset();
-            
             const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
             const selections = data.selections || {};
-            
             let totalPoints = 0;
             let pickedCount = 0;
             let completedPacks = 0;
-            
             // Update each pack's UI based on saved selections
             Object.keys(selections).forEach(packId => {
                 const pack = document.querySelector(`[data-pack-id="${packId}"]`);
                 if (pack && selections[packId].length === 2) {
                     pack.classList.add('complete');
-                    
-                    // Add lock icon if not already present
                     if (!pack.querySelector('.lock-icon')) {
                         const lockIcon = document.createElement('div');
                         lockIcon.className = 'lock-icon';
                         lockIcon.textContent = '🔒';
                         pack.appendChild(lockIcon);
                     }
-                    
-                    // Calculate points
                     totalPoints += selections[packId].reduce((sum, card) => sum + card.points, 0);
                     pickedCount += 2;
                     completedPacks++;
                 }
             });
-            
-            // Update stats display
             document.getElementById('totalPoints').textContent = totalPoints;
             document.getElementById('pickedCount').textContent = pickedCount;
-            
-            // If all packs are completed, redirect to selection page
+            // If all packs are completed, show results list
             if (completedPacks === 4) {
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 500);
+                document.getElementById('packsGrid').style.display = 'none';
+                renderResultsList(selections);
+                document.getElementById('resultsList').style.display = '';
+            } else {
+                document.getElementById('packsGrid').style.display = '';
+                document.getElementById('resultsList').style.display = 'none';
             }
+        }
+        
+        function renderResultsList(selections) {
+            const packIds = ['1','2','3','4'];
+            let totalPoints = 0;
+            let html = '<h2 style="font-size:22px;font-weight:900;margin-bottom:12px;">Your Picks</h2>';
+            packIds.forEach(id => {
+                const picks = selections[id];
+                if (!picks || picks.length !== 2) return;
+                const packTotal = (picks[0].points||0)+(picks[1].points||0);
+                totalPoints += packTotal;
+                html += `<div style="background:rgba(255,255,255,0.04);border-radius:16px;padding:16px;margin-bottom:14px;">
+                    <div style="font-weight:900;font-size:18px;margin-bottom:8px;">Pack #${id} <span style=\"color:#c4b5fd;font-size:14px;font-weight:700;float:right;\">${packTotal} pts</span></div>
+                    <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+                        <div style="max-width:70%">
+                            <div style="font-weight:700;">${picks[0].text||picks[0].label||'Unknown Pick'}</div>
+                            <div style="color:#cbd5e1;font-size:13px;">${picks[0].game||''}</div>
+                        </div>
+                        <div style="background:rgba(251,191,36,0.12);padding:6px 10px;border-radius:8px;font-weight:800;color:#fbbf24;">${picks[0].points||0} pts</div>
+                    </div>
+                    <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+                        <div style="max-width:70%">
+                            <div style="font-weight:700;">${picks[1].text||picks[1].label||'Unknown Pick'}</div>
+                            <div style="color:#cbd5e1;font-size:13px;">${picks[1].game||''}</div>
+                        </div>
+                        <div style="background:rgba(251,191,36,0.12);padding:6px 10px;border-radius:8px;font-weight:800;color:#fbbf24;">${picks[1].points||0} pts</div>
+                    </div>
+                </div>`;
+            });
+            html += `<div style="background:rgba(16,185,129,0.12);color:#10b981;padding:14px 0;border-radius:16px;text-align:center;font-size:20px;font-weight:900;margin-bottom:18px;">Grand Total: ${totalPoints} pts</div>`;
+            document.getElementById('resultsList').innerHTML = html;
         }
         
         // Check if we need to reset at midnight
@@ -472,6 +498,8 @@
                 // Reset stats
                 document.getElementById('totalPoints').textContent = '0';
                 document.getElementById('pickedCount').textContent = '0';
+                document.getElementById('packsGrid').style.display = '';
+                document.getElementById('resultsList').style.display = 'none';
             }
         }
         
@@ -510,4 +538,3 @@
     </script>
 </body>
 </html>
-
