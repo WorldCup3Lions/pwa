@@ -203,17 +203,6 @@
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
         }
         
-        @keyframes quickFadeOut {
-            0% { 
-                opacity: 1; 
-                transform: scale(1);
-            }
-            100% { 
-                opacity: 0; 
-                transform: scale(0.9);
-            }
-        }
-        
         .tap-indicator {
             margin-top: 32px;
             font-size: 18px;
@@ -537,52 +526,26 @@
             
             // Check if pack has been opened before
             if (openedPacks.includes(currentPackId)) {
-                // Pack was opened before - show quick fade animation
+                // Skip opening animation, show cards directly
+                document.getElementById('packOpeningScreen').classList.add('hidden');
+                document.getElementById('cardsSection').classList.add('visible');
                 isPackOpened = true;
-                const packVisual = document.getElementById('packVisual');
-                const packOpeningScreen = document.getElementById('packOpeningScreen');
-                const cardsSection = document.getElementById('cardsSection');
-                
-                // Add fade out class
-                packVisual.style.animation = 'quickFadeOut 0.6s forwards';
-                
-                setTimeout(() => {
-                    packOpeningScreen.classList.add('hidden');
-                    cardsSection.classList.add('visible');
-                    renderCards();
-                    updateUI();
-                }, 600);
+                renderCards();
+                updateUI();
             }
         }
         
-        // Seeded random function for consistent pack generation per session
+        // Seeded random function for consistent pack generation
         function seededRandom(seed) {
             const x = Math.sin(seed) * 10000;
             return x - Math.floor(x);
         }
         
-        // Generate a unique session seed based on device and reset time
-        function getSessionSeed() {
-            let sessionSeed = localStorage.getItem('sessionSeed');
-            const lastResetDate = localStorage.getItem('lastResetDate');
-            const today = new Date().toDateString();
-            
-            // If no session seed exists or it's a new day, generate a new one
-            if (!sessionSeed || lastResetDate !== today) {
-                // Create a random seed unique to this device and session
-                sessionSeed = Math.floor(Math.random() * 1000000).toString();
-                localStorage.setItem('sessionSeed', sessionSeed);
-                localStorage.setItem('lastResetDate', today);
-            }
-            
-            return parseInt(sessionSeed);
-        }
-        
         // Get 5 unique random cards for a pack
         function getPackCards(packId) {
-            const sessionSeed = getSessionSeed();
-            const seed = sessionSeed + (parseInt(packId) * 12345); // Unique seed per pack within session
+            const seed = parseInt(packId) * 12345; // Unique seed per pack
             const availableProps = [...allProps];
+            const selected = [];
             
             // Fisher-Yates shuffle with seeded random
             for (let i = availableProps.length - 1; i > 0; i--) {
@@ -640,7 +603,7 @@
             }, 1200);
         }
         
-        // Render all cards with staggered animation (only on initial load)
+        // Render all cards with staggered animation
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
@@ -650,7 +613,7 @@
                 const isDisabled = selectedCards.length >= 2 && !isSelected;
                 
                 const cardEl = document.createElement('div');
-                cardEl.className = `card initial-appear ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
+                cardEl.className = `card ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
                 cardEl.style.animationDelay = `${index * 0.1}s`;
                 cardEl.onclick = () => !isDisabled && toggleCard(card);
                 
@@ -666,6 +629,9 @@
                 `;
                 
                 container.appendChild(cardEl);
+                
+                // Trigger animation
+                setTimeout(() => cardEl.classList.add('appear'), 50);
             });
         }
         
