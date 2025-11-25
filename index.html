@@ -111,26 +111,15 @@
         }
         
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
         }
         
         .stat-item {
             text-align: center;
-        }
-        
-        .stat-label {
-            font-size: 11px;
-            color: #c4b5fd;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        
-        .stat-value {
-            font-size: 28px;
-            font-weight: 900;
+            flex: 1 1 0;
         }
         
         .section-header {
@@ -312,16 +301,13 @@
                 </div>
             </div>
             <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Points</div>
-                        <div class="stat-value" id="totalPoints">0</div>
-                    </div>
-                    <div class="stat-item">
+                <div class="stats-grid" style="justify-content:center;align-items:center;">
+                    <div class="stat-item" style="flex:0 0 0;max-width:0;"></div>
+                    <div class="stat-item" style="flex:1 1 0;">
                         <div class="stat-label">Picked</div>
                         <div class="stat-value"><span id="pickedCount">0</span>/8</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item" style="flex:1 1 0;">
                         <div class="stat-label">Resets</div>
                         <div class="stat-value" id="timeLeft">18h</div>
                     </div>
@@ -425,7 +411,7 @@
                     completedPacks++;
                 }
             });
-            document.getElementById('totalPoints').textContent = totalPoints;
+            // document.getElementById('totalPoints').textContent = totalPoints; // Don't display total points
             document.getElementById('pickedCount').textContent = pickedCount;
             // If all packs are completed, show results list
             if (completedPacks === 4) {
@@ -500,7 +486,7 @@
                 });
                 
                 // Reset stats
-                document.getElementById('totalPoints').textContent = '0';
+                // document.getElementById('totalPoints').textContent = '0'; // Don't display total points
                 document.getElementById('pickedCount').textContent = '0';
                 document.getElementById('packsGrid').style.display = '';
                 document.getElementById('resultsList').style.display = 'none';
