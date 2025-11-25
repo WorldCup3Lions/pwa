@@ -276,6 +276,7 @@
             justify-content: flex-start;
             position: relative;
             overflow: hidden;
+            transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
         }
         .sports-card-header {
             width: 100%;
@@ -367,6 +368,19 @@
         
         .lock-button:active {
             transform: scale(0.95);
+        }
+        .sports-card.selected {
+            box-shadow: 0 0 0 4px #10b981, 0 8px 24px rgba(99,102,241,0.18);
+            border-color: #10b981;
+            transform: scale(1.07);
+            z-index: 2;
+            animation: bounceCard 0.35s;
+        }
+        @keyframes bounceCard {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.13); }
+            70% { transform: scale(0.97); }
+            100% { transform: scale(1.07); }
         }
     </style>
 </head>
@@ -633,11 +647,19 @@
             packCards.forEach((card, index) => {
                 const isSelected = selectedCards.some(c => c.id === card.id);
                 const isDisabled = selectedCards.length >= 2 && !isSelected;
-                // Sports card layout
                 const cardEl = document.createElement('div');
-                cardEl.className = `sports-card initial-appear ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
+                cardEl.className = `sports-card initial-appear${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}`;
                 cardEl.style.animationDelay = `${index * 0.1}s`;
-                cardEl.onclick = () => !isDisabled && toggleCard(card);
+                cardEl.onclick = () => {
+                    if (!isDisabled) {
+                        toggleCard(card);
+                        cardEl.classList.add('selected');
+                        cardEl.style.animation = 'bounceCard 0.35s';
+                        setTimeout(() => {
+                            cardEl.style.animation = '';
+                        }, 350);
+                    }
+                };
                 cardEl.innerHTML = `
                     <div class="sports-card-header">${card.text}</div>
                     <div class="sports-card-image">
