@@ -262,15 +262,57 @@
             padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
         }
         
-        .card {
-            background: rgba(30, 27, 75, 0.6);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+        .sports-card {
+            width: 180px;
+            height: 252px;
+            background: linear-gradient(135deg, #4f46e5 60%, #7c3aed 100%);
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.18);
+            border: 3px solid #fbbf24;
+            margin: 0 auto 18px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+        }
+        .sports-card-header {
+            width: 100%;
+            background: rgba(251,191,36,0.18);
+            color: #fff;
+            font-weight: 900;
+            font-size: 16px;
+            text-align: center;
+            padding: 10px 0 6px 0;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .sports-card-image {
+            width: 120px;
+            height: 120px;
+            background: #fff;
+            border-radius: 12px;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .sports-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .sports-card-attrs {
+            width: 100%;
+            padding: 8px 0;
+            background: rgba(124,58,237,0.12);
+            color: #c4b5fd;
+            font-size: 13px;
+            text-align: center;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
         }
         
         .card.initial-appear {
@@ -297,62 +339,6 @@
         .card.disabled {
             opacity: 0.4;
             cursor: not-allowed;
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .card-text {
-            font-size: 16px;
-            font-weight: 600;
-            flex: 1;
-            padding-right: 12px;
-        }
-        
-        .checkmark {
-            width: 28px;
-            height: 28px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #059669;
-            flex-shrink: 0;
-        }
-        
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .card-game {
-            font-size: 12px;
-            color: #94a3b8;
-        }
-        
-        .card.selected .card-game {
-            color: rgba(255,255,255,0.8);
-        }
-        
-        .card-points {
-            background: rgba(251, 191, 36, 0.2);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #fbbf24;
-        }
-        
-        .card.selected .card-points {
-            background: rgba(255,255,255,0.2);
-            color: white;
         }
         
         .lock-button {
@@ -644,27 +630,25 @@
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
-            
             packCards.forEach((card, index) => {
                 const isSelected = selectedCards.some(c => c.id === card.id);
                 const isDisabled = selectedCards.length >= 2 && !isSelected;
-                
+                // Sports card layout
                 const cardEl = document.createElement('div');
-                cardEl.className = `card initial-appear ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
+                cardEl.className = `sports-card initial-appear ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
                 cardEl.style.animationDelay = `${index * 0.1}s`;
                 cardEl.onclick = () => !isDisabled && toggleCard(card);
-                
                 cardEl.innerHTML = `
-                    <div class="card-header">
-                        <div class="card-text">${card.text}</div>
-                        ${isSelected ? '<div class="checkmark">✓</div>' : ''}
+                    <div class="sports-card-header">${card.text}</div>
+                    <div class="sports-card-image">
+                        <img src="icon-400x560.png" alt="Player">
                     </div>
-                    <div class="card-footer">
-                        <div class="card-game">${card.game}</div>
-                        <div class="card-points">${card.points} pts</div>
+                    <div class="sports-card-attrs">
+                        <div>${card.game}</div>
+                        <div>Points: ${card.points}</div>
+                        <div>Rarity: Common</div>
                     </div>
                 `;
-                
                 container.appendChild(cardEl);
             });
         }
