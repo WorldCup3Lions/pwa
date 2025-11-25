@@ -260,8 +260,16 @@
         .cards-container {
             padding: 0 24px;
             padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+            display: flex;
+            flex-direction: row;
+            gap: 18px;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 10+ */
         }
-        
+        .cards-container::-webkit-scrollbar {
+            display: none;
+        }
         .sports-card {
             width: 180px;
             height: 252px;
@@ -269,7 +277,7 @@
             border-radius: 18px;
             box-shadow: 0 8px 24px rgba(99,102,241,0.18);
             border: 3px solid #fbbf24;
-            margin: 0 auto 18px auto;
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -277,6 +285,8 @@
             position: relative;
             overflow: hidden;
             transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+            flex: 0 0 auto;
+            z-index: 1;
         }
         .sports-card-header {
             width: 100%;
@@ -359,6 +369,7 @@
             opacity: 0;
             pointer-events: none;
             transition: all 0.3s;
+            z-index: 10;
         }
         
         .lock-button.visible {
@@ -644,47 +655,36 @@
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
-            packCards.forEach((card, index) => {
-                const isSelected = selectedCards.some(c => c.id === card.id);
-                const isDisabled = selectedCards.length >= 2 && !isSelected;
-                const cardEl = document.createElement('div');
-                cardEl.className = `sports-card initial-appear${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}`;
-                cardEl.style.animationDelay = `${index * 0.1}s`;
-                cardEl.onclick = () => {
-                    if (!isDisabled) {
-                        toggleCard(card);
-                        cardEl.classList.add('selected');
-                        cardEl.style.animation = 'bounceCard 0.35s';
-                        setTimeout(() => {
-                            cardEl.style.animation = '';
-                        }, 350);
-                    }
-                };
-                cardEl.innerHTML = `
+            packCards.forEach((card, idx) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'sports-card card initial-appear';
+                cardDiv.style.animationDelay = (idx * 0.12) + 's';
+                cardDiv.onclick = () => toggleCard(card);
+                if (selectedCards.includes(card.id)) cardDiv.classList.add('selected');
+                if (selectedCards.length === 2 && !selectedCards.includes(card.id)) cardDiv.classList.add('disabled');
+                cardDiv.innerHTML = `
                     <div class="sports-card-header">${card.text}</div>
-                    <div class="sports-card-image">
-                        <img src="icon-400x560.png" alt="Player">
-                    </div>
+                    <div class="sports-card-image"><img src="icon-400x560.png" alt="Player"></div>
                     <div class="sports-card-attrs">
                         <div>${card.game}</div>
                         <div>Points: ${card.points}</div>
                         <div>Rarity: Common</div>
                     </div>
                 `;
-                container.appendChild(cardEl);
+                container.appendChild(cardDiv);
             });
         }
         
         // Toggle card selection
         function toggleCard(card) {
-            const index = selectedCards.findIndex(c => c.id === card.id);
-            
-            if (index > -1) {
-                selectedCards.splice(index, 1);
-            } else if (selectedCards.length < 2) {
-                selectedCards.push(card);
+            if (selectedCards.includes(card.id)) {
+                // Unselect
+                selectedCards = selectedCards.filter(id => id !== card.id);
+            } else {
+                if (selectedCards.length < 2) {
+                    selectedCards.push(card.id);
+                }
             }
-            
             updateCardsState();
             updateUI();
         }
@@ -692,37 +692,15 @@
         // Update card states without re-rendering (no blinking)
         function updateCardsState() {
             const container = document.getElementById('cardsContainer');
-            const cardElements = container.querySelectorAll('.card');
-            
-            cardElements.forEach((cardEl, index) => {
-                const card = packCards[index];
-                const isSelected = selectedCards.some(c => c.id === card.id);
-                const isDisabled = selectedCards.length >= 2 && !isSelected;
-                
-                // Update classes
-                if (isSelected) {
-                    cardEl.classList.add('selected');
+            const cards = container.querySelectorAll('.card');
+            cards.forEach(cardDiv => {
+                const cardId = parseInt(cardDiv.getAttribute('data-card-id'));
+                if (selectedCards.includes(cardId)) {
+                    cardDiv.classList.add('selected');
+                    cardDiv.style.zIndex = 1;
                 } else {
-                    cardEl.classList.remove('selected');
-                }
-                
-                if (isDisabled) {
-                    cardEl.classList.add('disabled');
-                } else {
-                    cardEl.classList.remove('disabled');
-                }
-                
-                // Update checkmark
-                const header = cardEl.querySelector('.card-header');
-                const existingCheckmark = header.querySelector('.checkmark');
-                
-                if (isSelected && !existingCheckmark) {
-                    const checkmark = document.createElement('div');
-                    checkmark.className = 'checkmark';
-                    checkmark.textContent = '✓';
-                    header.appendChild(checkmark);
-                } else if (!isSelected && existingCheckmark) {
-                    existingCheckmark.remove();
+                    cardDiv.classList.remove('selected');
+                    cardDiv.style.zIndex = 0;
                 }
             });
         }
