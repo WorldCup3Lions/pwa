@@ -22,6 +22,7 @@
             color: white;
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
         
         .status-bar {
@@ -247,115 +248,175 @@
         }
         
         .cards-container {
-    position: relative;
-    height: 450px;
-    padding: 0 24px;
-    margin-bottom: 40px;
-    perspective: 1500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+            position: relative;
+            height: 450px;
+            padding: 0 24px;
+            margin-bottom: 40px;
+            perspective: 1500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: pan-y;
+            user-select: none;
+        }
 
-.card {
-    position: absolute;
-    width: 320px;
-    background: rgba(30, 27, 75, 0.6);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(139, 92, 246, 0.3);
-    border-radius: 16px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.5s ease-out;
-}
+        .card {
+            position: absolute;
+            width: 320px;
+            background: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.card.initial-appear {
-    opacity: 0;
-    animation: cardAppear 0.5s forwards;
-}
+        .card.initial-appear {
+            opacity: 0;
+            animation: cardAppear 0.5s forwards;
+        }
 
-@keyframes cardAppear {
-    to { opacity: 1; }
-}
+        @keyframes cardAppear {
+            to { opacity: 1; }
+        }
 
-.card:active {
-    opacity: 0.9;
-}
+        .card:active {
+            opacity: 0.9;
+        }
 
-.card.selected {
-    background: linear-gradient(135deg, #059669, #10b981);
-    border-color: rgba(16, 185, 129, 0.5);
-    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-}
+        .card.click-animate {
+            animation: cardClick 0.3s ease-out;
+        }
 
-.card.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
+        @keyframes cardClick {
+            0% { transform: var(--card-transform) scale(1); }
+            50% { transform: var(--card-transform) scale(0.95); }
+            100% { transform: var(--card-transform) scale(1); }
+        }
 
-/* Carousel navigation */
-.carousel-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 20px;
-}
+        .card.selected {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
 
-.carousel-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-}
+        .card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
-.carousel-btn:hover {
-    background: rgba(255,255,255,0.2);
-    transform: scale(1.1);
-}
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
 
-.carousel-btn:active {
-    transform: scale(0.95);
-}
+        .card-text {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            flex: 1;
+        }
 
-.carousel-dots {
-    display: flex;
-    gap: 8px;
-}
+        .checkmark {
+            background: white;
+            color: #10b981;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
 
-.carousel-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    cursor: pointer;
-    transition: all 0.3s;
-}
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-.carousel-dot.active {
-    background: #8b5cf6;
-    width: 32px;
-    border-radius: 6px;
-}
+        .card-game {
+            font-size: 13px;
+            color: #c4b5fd;
+        }
 
-.carousel-counter {
-    color: #c4b5fd;
-    font-size: 14px;
-    margin-top: 12px;
-    text-align: center;
-}
+        .card-points {
+            font-size: 18px;
+            font-weight: 900;
+            color: #fbbf24;
+        }
+
+        /* Carousel navigation */
+        .carousel-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .carousel-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        .carousel-btn:active {
+            transform: scale(0.95);
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: #8b5cf6;
+            width: 32px;
+            border-radius: 6px;
+        }
+
+        .carousel-counter {
+            color: #c4b5fd;
+            font-size: 14px;
+            margin-top: 12px;
+            text-align: center;
+        }
         
         .lock-button {
             position: fixed;
-            bottom: env(safe-area-inset-bottom, 20px);
+            bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
             left: 24px;
             right: 24px;
             background: linear-gradient(135deg, #059669, #10b981);
@@ -420,7 +481,7 @@
         </div>
         
         <div class="cards-container" id="cardsContainer">
-    <!-- Cards will be dynamically inserted here -->
+            <!-- Cards will be dynamically inserted here -->
         </div>
 
         <div class="carousel-nav">
@@ -437,7 +498,6 @@
         </button>
     </div>
     <script>
-    
         const allProps = [
             { id: 1, text: 'Mahomes Over 275.5 Pass Yds', points: 150, game: 'JAX vs KC' },
             { id: 2, text: 'Chiefs -7.5', points: 75, game: 'JAX vs KC' },
@@ -527,43 +587,44 @@
         let tapCount = 0;
         let isPackOpened = false;
         let currentCardIndex = 0;
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let dragThreshold = 80;
 
         // Initialize page
         function init() {
             currentPackId = localStorage.getItem('currentPack') || '1';
             document.getElementById('packName').textContent = `Pack #${currentPackId}`;
             
-            // Load existing selections if any
             const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
             const selections = data.selections || {};
             const openedPacks = data.openedPacks || [];
             selectedCards = selections[currentPackId] || [];
             
-            // Get cards for this pack
             packCards = getPackCards(currentPackId);
             
-            // Check if pack has been opened before
             if (openedPacks.includes(currentPackId)) {
                 document.getElementById('packOpeningScreen').classList.add('hidden');
                 document.getElementById('cardsSection').classList.add('visible');
                 isPackOpened = true;
                 renderCards();
                 updateUI();
+                initDragListeners();
             }
         }
 
-        // Seeded random function for consistent pack generation
+        // Seeded random function
         function seededRandom(seed) {
             const x = Math.sin(seed) * 10000;
             return x - Math.floor(x);
         }
 
-        // Get 5 unique random cards for a pack
+        // Get 5 unique cards for pack
         function getPackCards(packId) {
             const seed = parseInt(packId) * 12345;
             const availableProps = [...allProps];
             
-            // Fisher-Yates shuffle with seeded random
             for (let i = availableProps.length - 1; i > 0; i--) {
                 const j = Math.floor(seededRandom(seed + i) * (i + 1));
                 [availableProps[i], availableProps[j]] = [availableProps[j], availableProps[i]];
@@ -572,7 +633,7 @@
             return availableProps.slice(0, 5);
         }
 
-        // Handle pack tapping
+        // Pack tapping
         function tapPack() {
             if (isPackOpened) return;
             
@@ -592,7 +653,7 @@
             }
         }
 
-        // Open the pack with animation
+        // Open pack animation
         function openPack() {
             isPackOpened = true;
             const packVisual = document.getElementById('packVisual');
@@ -602,7 +663,6 @@
             packVisual.classList.add('opening');
             packOpeningScreen.classList.add('opening');
             
-            // Mark this pack as opened
             const data = JSON.parse(localStorage.getItem('propPicksData') || '{}');
             if (!data.openedPacks) data.openedPacks = [];
             if (!data.openedPacks.includes(currentPackId)) {
@@ -615,10 +675,11 @@
                 cardsSection.classList.add('visible');
                 renderCards();
                 updateUI();
+                initDragListeners();
             }, 1200);
         }
 
-        // Render all cards with carousel positioning
+        // Render cards
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
@@ -628,8 +689,8 @@
                 const isDisabled = selectedCards.length >= 2 && !isSelected;
                 
                 const cardEl = document.createElement('div');
-                cardEl.className = `card ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
-                cardEl.onclick = () => !isDisabled && toggleCard(card);
+                cardEl.className = `card initial-appear ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
+                cardEl.dataset.index = index;
                 
                 cardEl.innerHTML = `
                     <div class="card-header">
@@ -672,8 +733,8 @@
 
         function getCardOpacity(position) {
             if (position === 'center') return 1;
-            if (position === 'left' || position === 'right') return 0.6;
-            return 0.3;
+            if (position === 'left' || position === 'right') return 0.7;
+            return 0;
         }
 
         function getCardZIndex(position) {
@@ -698,13 +759,23 @@
             
             cardElements.forEach((cardEl, index) => {
                 const position = getCardPosition(index);
-                cardEl.style.transform = getCardTransform(position);
+                const transform = getCardTransform(position);
+                
+                cardEl.style.setProperty('--card-transform', transform);
+                cardEl.style.transform = transform;
                 cardEl.style.opacity = getCardOpacity(position);
                 cardEl.style.zIndex = getCardZIndex(position);
-                cardEl.style.pointerEvents = position === 'center' ? 'auto' : 'none';
+                
+                if (position === 'center') {
+                    cardEl.style.pointerEvents = 'auto';
+                } else if (position === 'left' || position === 'right') {
+                    cardEl.style.pointerEvents = 'auto';
+                    cardEl.style.cursor = 'pointer';
+                } else {
+                    cardEl.style.pointerEvents = 'none';
+                }
             });
             
-            // Update dots
             const dots = document.querySelectorAll('.carousel-dot');
             dots.forEach((dot, index) => {
                 if (index === currentCardIndex) {
@@ -714,7 +785,6 @@
                 }
             });
             
-            // Update counter
             document.getElementById('cardCounter').textContent = currentCardIndex + 1;
             document.getElementById('totalCards').textContent = packCards.length;
         }
@@ -734,7 +804,28 @@
             updateCardPositions();
         }
 
-        // Toggle card selection
+        // Card click handler with animation
+        function handleCardClick(event) {
+            const cardEl = event.currentTarget;
+            const index = parseInt(cardEl.dataset.index);
+            const position = getCardPosition(index);
+            
+            if (position === 'left') {
+                prevCard();
+            } else if (position === 'right') {
+                nextCard();
+            } else if (position === 'center') {
+                const card = packCards[index];
+                const isDisabled = cardEl.classList.contains('disabled');
+                
+                if (!isDisabled) {
+                    cardEl.classList.add('click-animate');
+                    setTimeout(() => cardEl.classList.remove('click-animate'), 300);
+                    toggleCard(card);
+                }
+            }
+        }
+
         function toggleCard(card) {
             const index = selectedCards.findIndex(c => c.id === card.id);
             
@@ -748,7 +839,6 @@
             updateUI();
         }
 
-        // Update card states without re-rendering
         function updateCardsState() {
             const container = document.getElementById('cardsContainer');
             const cardElements = container.querySelectorAll('.card');
@@ -782,11 +872,8 @@
                     existingCheckmark.remove();
                 }
             });
-            
-            updateCardPositions();
         }
 
-        // Update UI (counter and button)
         function updateUI() {
             document.getElementById('selectedCount').textContent = selectedCards.length;
             
@@ -798,7 +885,56 @@
             }
         }
 
-        // Lock in picks and save
+        // Drag functionality
+        function initDragListeners() {
+            const container = document.getElementById('cardsContainer');
+            
+            container.addEventListener('mousedown', handleDragStart);
+            container.addEventListener('touchstart', handleDragStart, { passive: true });
+            
+            document.addEventListener('mousemove', handleDragMove);
+            document.addEventListener('touchmove', handleDragMove, { passive: false });
+            
+            document.addEventListener('mouseup', handleDragEnd);
+            document.addEventListener('touchend', handleDragEnd);
+            
+            const cardElements = container.querySelectorAll('.card');
+            cardElements.forEach(cardEl => {
+                cardEl.addEventListener('click', handleCardClick);
+            });
+        }
+
+        function handleDragStart(e) {
+            isDragging = true;
+            startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+            currentX = startX;
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+        }
+
+        function handleDragEnd(e) {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            const diffX = currentX - startX;
+            
+            if (Math.abs(diffX) > dragThreshold) {
+                if (diffX > 0) {
+                    prevCard();
+                } else {
+                    nextCard();
+                }
+            }
+            
+            startX = 0;
+            currentX = 0;
+        }
+
         function lockInPicks() {
             if (selectedCards.length !== 2) return;
             
@@ -811,12 +947,10 @@
             window.location.href = 'index.html';
         }
 
-        // Go back without saving
         function goBack() {
             window.location.href = 'index.html';
         }
 
-        // Initialize on load
         init();
     </script>
 </body>
