@@ -247,102 +247,111 @@
         }
         
         .cards-container {
-            padding: 0 24px;
-            padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
-        }
-        
-        .card {
-            background: rgba(30, 27, 75, 0.6);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
-        }
-        
-        .card.initial-appear {
-            opacity: 0;
-            animation: cardAppear 0.5s forwards;
-        }
-        
-        @keyframes cardAppear {
-            to {
-                opacity: 1;
-            }
-        }
-        
-        .card:active {
-            opacity: 0.9;
-        }
-        
-        .card.selected {
-            background: linear-gradient(135deg, #059669, #10b981);
-            border-color: rgba(16, 185, 129, 0.5);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-        }
-        
-        .card.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .card-text {
-            font-size: 16px;
-            font-weight: 600;
-            flex: 1;
-            padding-right: 12px;
-        }
-        
-        .checkmark {
-            width: 28px;
-            height: 28px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #059669;
-            flex-shrink: 0;
-        }
-        
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .card-game {
-            font-size: 12px;
-            color: #94a3b8;
-        }
-        
-        .card.selected .card-game {
-            color: rgba(255,255,255,0.8);
-        }
-        
-        .card-points {
-            background: rgba(251, 191, 36, 0.2);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #fbbf24;
-        }
-        
-        .card.selected .card-points {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
+    position: relative;
+    height: 450px;
+    padding: 0 24px;
+    margin-bottom: 40px;
+    perspective: 1500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    position: absolute;
+    width: 320px;
+    background: rgba(30, 27, 75, 0.6);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.5s ease-out;
+}
+
+.card.initial-appear {
+    opacity: 0;
+    animation: cardAppear 0.5s forwards;
+}
+
+@keyframes cardAppear {
+    to { opacity: 1; }
+}
+
+.card:active {
+    opacity: 0.9;
+}
+
+.card.selected {
+    background: linear-gradient(135deg, #059669, #10b981);
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+}
+
+.card.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Carousel navigation */
+.carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.carousel-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.carousel-btn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.1);
+}
+
+.carousel-btn:active {
+    transform: scale(0.95);
+}
+
+.carousel-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.carousel-dot.active {
+    background: #8b5cf6;
+    width: 32px;
+    border-radius: 6px;
+}
+
+.carousel-counter {
+    color: #c4b5fd;
+    font-size: 14px;
+    margin-top: 12px;
+    text-align: center;
+}
         
         .lock-button {
             position: fixed;
@@ -411,16 +420,24 @@
         </div>
         
         <div class="cards-container" id="cardsContainer">
-            <!-- Cards will be dynamically inserted here -->
+    <!-- Cards will be dynamically inserted here -->
+        </div>
+
+        <div class="carousel-nav">
+            <button class="carousel-btn" id="prevBtn" onclick="prevCard()">‹</button>
+            <div class="carousel-dots" id="carouselDots"></div>
+            <button class="carousel-btn" id="nextBtn" onclick="nextCard()">›</button>
+        </div>
+        <div class="carousel-counter">
+            <span id="cardCounter">1</span> of <span id="totalCards">5</span>
         </div>
         
         <button class="lock-button" id="lockButton" onclick="lockInPicks()">
             🔒 Lock In Picks
         </button>
     </div>
-    
     <script>
-        // 80 unique props
+    
         const allProps = [
             { id: 1, text: 'Mahomes Over 275.5 Pass Yds', points: 150, game: 'JAX vs KC' },
             { id: 2, text: 'Chiefs -7.5', points: 75, game: 'JAX vs KC' },
@@ -503,13 +520,14 @@
             { id: 79, text: 'Safety Scored', points: 600, game: 'SF vs SEA' },
             { id: 80, text: 'McCaffrey Anytime TD', points: 165, game: 'SF vs SEA' }
         ];
-        
+
         let selectedCards = [];
         let currentPackId = null;
         let packCards = [];
         let tapCount = 0;
         let isPackOpened = false;
-        
+        let currentCardIndex = 0;
+
         // Initialize page
         function init() {
             currentPackId = localStorage.getItem('currentPack') || '1';
@@ -521,12 +539,11 @@
             const openedPacks = data.openedPacks || [];
             selectedCards = selections[currentPackId] || [];
             
-            // Get cards for this pack (ensuring no duplicates)
+            // Get cards for this pack
             packCards = getPackCards(currentPackId);
             
             // Check if pack has been opened before
             if (openedPacks.includes(currentPackId)) {
-                // Skip opening animation, show cards directly
                 document.getElementById('packOpeningScreen').classList.add('hidden');
                 document.getElementById('cardsSection').classList.add('visible');
                 isPackOpened = true;
@@ -534,18 +551,17 @@
                 updateUI();
             }
         }
-        
+
         // Seeded random function for consistent pack generation
         function seededRandom(seed) {
             const x = Math.sin(seed) * 10000;
             return x - Math.floor(x);
         }
-        
+
         // Get 5 unique random cards for a pack
         function getPackCards(packId) {
-            const seed = parseInt(packId) * 12345; // Unique seed per pack
+            const seed = parseInt(packId) * 12345;
             const availableProps = [...allProps];
-            const selected = [];
             
             // Fisher-Yates shuffle with seeded random
             for (let i = availableProps.length - 1; i > 0; i--) {
@@ -553,10 +569,9 @@
                 [availableProps[i], availableProps[j]] = [availableProps[j], availableProps[i]];
             }
             
-            // Take first 5 cards
             return availableProps.slice(0, 5);
         }
-        
+
         // Handle pack tapping
         function tapPack() {
             if (isPackOpened) return;
@@ -576,7 +591,7 @@
                 openPack();
             }
         }
-        
+
         // Open the pack with animation
         function openPack() {
             isPackOpened = true;
@@ -602,8 +617,8 @@
                 updateUI();
             }, 1200);
         }
-        
-        // Render all cards with staggered animation
+
+        // Render all cards with carousel positioning
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
@@ -614,7 +629,6 @@
                 
                 const cardEl = document.createElement('div');
                 cardEl.className = `card ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`;
-                cardEl.style.animationDelay = `${index * 0.1}s`;
                 cardEl.onclick = () => !isDisabled && toggleCard(card);
                 
                 cardEl.innerHTML = `
@@ -629,12 +643,97 @@
                 `;
                 
                 container.appendChild(cardEl);
-                
-                // Trigger animation
-                setTimeout(() => cardEl.classList.add('appear'), 50);
+            });
+            
+            renderDots();
+            updateCardPositions();
+        }
+
+        function renderDots() {
+            const dotsContainer = document.getElementById('carouselDots');
+            dotsContainer.innerHTML = '';
+            
+            packCards.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = `carousel-dot ${index === currentCardIndex ? 'active' : ''}`;
+                dot.onclick = () => goToCard(index);
+                dotsContainer.appendChild(dot);
             });
         }
-        
+
+        function getCardTransform(position) {
+            if (position === 'center') return 'translateX(0) scale(1) rotateY(0deg)';
+            if (position === 'left') return 'translateX(-120%) scale(0.85) rotateY(25deg)';
+            if (position === 'right') return 'translateX(120%) scale(0.85) rotateY(-25deg)';
+            if (position === 'far-left') return 'translateX(-140%) scale(0.7) rotateY(35deg)';
+            if (position === 'far-right') return 'translateX(140%) scale(0.7) rotateY(-35deg)';
+            return 'translateX(0) scale(0)';
+        }
+
+        function getCardOpacity(position) {
+            if (position === 'center') return 1;
+            if (position === 'left' || position === 'right') return 0.6;
+            return 0.3;
+        }
+
+        function getCardZIndex(position) {
+            if (position === 'center') return 30;
+            if (position === 'left' || position === 'right') return 20;
+            return 10;
+        }
+
+        function getCardPosition(index) {
+            const diff = index - currentCardIndex;
+            if (diff === 0) return 'center';
+            if (diff === 1 || diff === -(packCards.length - 1)) return 'right';
+            if (diff === -1 || diff === packCards.length - 1) return 'left';
+            if (diff === 2 || diff === -(packCards.length - 2)) return 'far-right';
+            if (diff === -2 || diff === packCards.length - 2) return 'far-left';
+            return 'hidden';
+        }
+
+        function updateCardPositions() {
+            const container = document.getElementById('cardsContainer');
+            const cardElements = container.querySelectorAll('.card');
+            
+            cardElements.forEach((cardEl, index) => {
+                const position = getCardPosition(index);
+                cardEl.style.transform = getCardTransform(position);
+                cardEl.style.opacity = getCardOpacity(position);
+                cardEl.style.zIndex = getCardZIndex(position);
+                cardEl.style.pointerEvents = position === 'center' ? 'auto' : 'none';
+            });
+            
+            // Update dots
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                if (index === currentCardIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+            
+            // Update counter
+            document.getElementById('cardCounter').textContent = currentCardIndex + 1;
+            document.getElementById('totalCards').textContent = packCards.length;
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % packCards.length;
+            updateCardPositions();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + packCards.length) % packCards.length;
+            updateCardPositions();
+        }
+
+        function goToCard(index) {
+            currentCardIndex = index;
+            updateCardPositions();
+        }
+
         // Toggle card selection
         function toggleCard(card) {
             const index = selectedCards.findIndex(c => c.id === card.id);
@@ -648,8 +747,8 @@
             updateCardsState();
             updateUI();
         }
-        
-        // Update card states without re-rendering (no blinking)
+
+        // Update card states without re-rendering
         function updateCardsState() {
             const container = document.getElementById('cardsContainer');
             const cardElements = container.querySelectorAll('.card');
@@ -659,7 +758,6 @@
                 const isSelected = selectedCards.some(c => c.id === card.id);
                 const isDisabled = selectedCards.length >= 2 && !isSelected;
                 
-                // Update classes
                 if (isSelected) {
                     cardEl.classList.add('selected');
                 } else {
@@ -672,7 +770,6 @@
                     cardEl.classList.remove('disabled');
                 }
                 
-                // Update checkmark
                 const header = cardEl.querySelector('.card-header');
                 const existingCheckmark = header.querySelector('.checkmark');
                 
@@ -685,8 +782,10 @@
                     existingCheckmark.remove();
                 }
             });
+            
+            updateCardPositions();
         }
-        
+
         // Update UI (counter and button)
         function updateUI() {
             document.getElementById('selectedCount').textContent = selectedCards.length;
@@ -698,7 +797,7 @@
                 lockButton.classList.remove('visible');
             }
         }
-        
+
         // Lock in picks and save
         function lockInPicks() {
             if (selectedCards.length !== 2) return;
@@ -711,12 +810,12 @@
             
             window.location.href = 'index.html';
         }
-        
+
         // Go back without saving
         function goBack() {
             window.location.href = 'index.html';
         }
-        
+
         // Initialize on load
         init();
     </script>
