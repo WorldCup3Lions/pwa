@@ -258,6 +258,7 @@
             justify-content: center;
             touch-action: pan-y;
             user-select: none;
+            overflow: hidden;
         }
 
         .card {
@@ -925,18 +926,15 @@
 
         function handleDragEnd(e) {
             if (!isDragging) return;
-            
             isDragging = false;
             const diffX = currentX - startX;
-            
             if (Math.abs(diffX) > dragThreshold) {
                 if (diffX > 0) {
                     prevCard();
-                } else {
+                } else if (diffX < 0) {
                     nextCard();
                 }
             }
-            
             startX = 0;
             currentX = 0;
         }
